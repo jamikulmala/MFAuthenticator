@@ -16,7 +16,7 @@ export const Landing = () => {
     <Container>
       <SubContainer>
         <Header>
-          MFAuntheticator
+          MFAuthenticator
         </Header>
       </SubContainer>
       <SubContainer>
