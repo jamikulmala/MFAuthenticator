@@ -7,12 +7,23 @@ export const Register = () => {
   
   const { setReqStatus } = useAppState();
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
+  };
+
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleLastNameChange = (event) => {
+    setLastName(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -23,13 +34,52 @@ export const Register = () => {
     setConfirm(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
+  };
+
+  const handleSubmit = async (event) => {
+    const url = 'http://localhost:8080/register';
+
     event.preventDefault();
+
+    if (!isChecked) {
+      alert('You need to agree the terms to continue');
+      return;
+    }
+
+    const user = {
+      FirstName: name,
+      LastName: lastName,
+      Email: email,
+      Password: password,
+      ConfirmPassword: confirm,
+      Checked: isChecked
+    }
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const responseData = await response.text();
+      console.log(responseData);
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
   };
 
   useEffect(() => {
-    setReqStatus("Register By Giving Your Information And Choosing A Strong Password. Don't Worry Everything Is Encypted And The Data Stored Only For Educational Purposes.")
-  },[]);
+    setReqStatus("Register By Giving Your Information And Choosing A Strong Password. The Password Is Encypted And The Data Stored Only For Educational Purposes.")
+  },[setReqStatus]);
 
   return (
     <Container>
@@ -40,6 +90,17 @@ export const Register = () => {
           onChange={handleEmailChange}
         />
         <TextField1
+          label="First name"
+          value={name}
+          autoComplete="off"
+          onChange={handleNameChange}
+        />
+        <TextField1
+          label="Last name"
+          value={lastName}
+          onChange={handleLastNameChange}
+        />
+        <TextField1
           label="Password"
           type="password"
           value={password}
@@ -47,12 +108,13 @@ export const Register = () => {
         />
         <TextField1
           label="Confirm password"
+          type="password"
           value={confirm}
           onChange={handleConfirmChange}
         />
         <HelpText>
           By continuing you agree that the application can process your data for educational purposes
-          <CheckBoxSmall></CheckBoxSmall>
+          <CheckBoxSmall checked={isChecked} onChange={handleCheckboxChange}></CheckBoxSmall>
         </HelpText>
         <Button1 variant="contained" type="submit">
           Sign In

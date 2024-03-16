@@ -1,0 +1,18 @@
+## Running the backend
+Running the backend requires installing Go language from https://golang.org/dl/ and setting it up. go run main.go in the directory to start the server.
+
+## Installing and running postgre
+Install postgreSQL from their site and create master user postgre. Set your own password.
+pg_ctl -D "C:\Program Files\PostgreSQL\16\data" start to run postgre
+
+## Creating and running the database
+```console
+psql -U postgres
+CREATE DATABASE authenticator;
+CREATE TABLE users ( ID SERIAL PRIMARY KEY, first_name VARCHAR(50), last_name VARCHAR(50), email VARCHAR(255), password VARCHAR(128) );
+```
+# Example view users from the table
+```console
+\c authenticator
+SELECT * FROM users;
+```

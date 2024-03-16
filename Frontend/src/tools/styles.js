@@ -1,4 +1,4 @@
-import { fontWeight, styled } from '@mui/system';
+import { styled } from '@mui/system';
 import { Box as MuiBox, Button as MuiButton, Typography as MuiTypography, Toolbar as MuiToolbar, TextField as MuiTextField, Checkbox as MuiCheckbox } from '@mui/material';
 
 import backgroundPhoto from './photos/planet-earth-background.jpg';
@@ -95,17 +95,24 @@ export const TextField1 = styled(MuiTextField)({
 export const HelpText = styled(MuiTypography)({
     marginTop: '5px',
     font: 'sans-serif',
-    color: '#000000',
-    fontWeight: 'bold'
+    color: '#F5F5F5',
+    fontWeight: 'bold',
+    opacity: 0.9
 });
 
 export const HelpButton = styled(MuiButton)({
     color: '#FFFFFF', 
     fontWeight: 'bold',
-    '&:hover': {color: '#F0F0F0'}
+    '&:hover': {color: '#FFFFFF'}
 });
 
 export const CheckBoxSmall = styled(MuiCheckbox)({
-    color: '#FFFFFF', 
-    '&:hover': {color: '#F0F0F0'}
+    color: '#F5F5F5', 
+    '&:hover': {color: '#FFFFFF'},
+    '&.Mui-checked': {
+    color: '#F5F5F5',
+    '&:hover': {
+      color: '#FFFFFF',
+    },
+  },
 });

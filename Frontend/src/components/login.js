@@ -24,7 +24,7 @@ export const Login = () => {
 
   useEffect(() => {
     setReqStatus("Login To Your Account. Email Confirmation Required.")
-  },[]);
+  },[setReqStatus]);
 
   return (
     <Container>

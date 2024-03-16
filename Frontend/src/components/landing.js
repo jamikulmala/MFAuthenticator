@@ -9,7 +9,7 @@ export const Landing = () => {
   const { setReqStatus } = useAppState();
 
   useEffect(() => {
-    setReqStatus("Secure Authentication - The Session Is Secured And The Data And The Traffic Encrypted. Login Or Register To Your Account Using Multifactor Authentication.")
+    setReqStatus("Secure Authentication - Login Or Register To Your Account Using Multifactor Authentication.")
   },[]);
 
   return (
