@@ -19,4 +19,8 @@ Every user who registers to the application is explicitly shown the conditions f
 ### User information and password validition on client and server
 Includes password strength validation, email formatting and uniqueness, limits for input sizes and password confirmation.
 ### Error handling
-Server errors are displayed with error message and appropriate HTTP code. If methods fail due to user failures, errors are handled and displayed to guide the user.
+Server errors are displayed with error message and appropriate HTTP code in the console. If methods fail due to user failures, errors are handled and displayed to guide the user.
+### Password encryption
+The passwords of users are encrypted in the backend before storing to database using bcrypt hashing algorithm.
+### SQL injection
+SQL queries are parametrized and the user input is whitelist validated and sanitized for special characters on both client and server side to prevent inserting malicious queries.

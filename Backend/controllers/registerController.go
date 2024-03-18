@@ -3,10 +3,11 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 
 	"mfauthenticator/tools"
 
@@ -28,6 +29,11 @@ func RegisterController(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Sanitize user input
+	user.FirstName = tools.SanitizeInput(user.FirstName)
+	user.LastName = tools.SanitizeInput(user.LastName)
+	user.Email = tools.SanitizeInput(user.Email)
+
 	if err := tools.ValidateUserData(user); err != nil {
 		http.Error(w, "Validation error: "+err.Error(), http.StatusBadRequest)
 		return
@@ -37,7 +43,6 @@ func RegisterController(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Validation error: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	user.ConfirmPassword = ""
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -46,7 +51,11 @@ func RegisterController(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := storeUserData(user, string(hashedPassword)); err != nil {
-		http.Error(w, "Failed to store user data: "+err.Error(), http.StatusInternalServerError)
+		if err.Error() == "email already in use" {
+			http.Error(w, "Email already in use", http.StatusBadRequest)
+		} else {
+			http.Error(w, "Database error", http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -67,6 +76,11 @@ func storeUserData(user tools.User, hashedPassword string) error {
 	statement := `INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4)`
 	_, err = db.Exec(statement, user.FirstName, user.LastName, user.Email, hashedPassword)
 	if err != nil {
+		// Check if the error is due to a duplicate key violation
+		pgErr, ok := err.(*pq.Error)
+		if ok && pgErr.Code == "23505" { // 23505 is the PostgreSQL error code for unique_violation
+			return errors.New("email already in use")
+		}
 		return err
 	}
 

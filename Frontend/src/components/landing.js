@@ -10,7 +10,7 @@ export const Landing = () => {
 
   useEffect(() => {
     setReqStatus("Secure Authentication - Login Or Register To Your Account Using Multifactor Authentication.")
-  },[]);
+  },[setReqStatus]);
 
   return (
     <Container>

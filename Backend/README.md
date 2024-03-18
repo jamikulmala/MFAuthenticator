@@ -9,7 +9,7 @@ pg_ctl -D "C:\Program Files\PostgreSQL\16\data" start to run postgre
 ```console
 psql -U postgres
 CREATE DATABASE authenticator;
-CREATE TABLE users ( ID SERIAL PRIMARY KEY, first_name VARCHAR(50), last_name VARCHAR(50), email VARCHAR(255), password VARCHAR(128) );
+CREATE TABLE users ( ID SERIAL PRIMARY KEY, first_name VARCHAR(50) NOT NULL, last_name VARCHAR(50) NOT NULL, email VARCHAR(255) UNIQUE NOT NULL , password VARCHAR(128) NOT NULL );
 ```
 # Example view users from the table
 ```console

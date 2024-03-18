@@ -70,6 +70,7 @@ export const TextField1 = styled(MuiTextField)({
     borderRadius: '4px',
     marginBottom: '20px',
     opacity: 0.8,
+    width: '50%',
     '& .MuiInputBase-input': {
         color: '#FFFFFF',
     },

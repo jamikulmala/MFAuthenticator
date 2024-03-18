@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { Button1, CheckBoxSmall, Container, HelpButton, HelpText, TextField1 } from "../tools/styles";
 import { useEffect, useState } from "react";
 import { useAppState } from "../tools/context";
+import { isStrongPassword, isValidEmail, isWithinLength } from "../tools/validate";
 
 export const Register = () => {
   
@@ -12,17 +13,35 @@ export const Register = () => {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [isChecked, setIsChecked] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
+  const whitelistRegex = /^[a-zA-Z0-9.@]*$/; // allowing alphanumerical characters with . - _ and @ for email
+
   const handleEmailChange = (event) => {
+    const { value } = event.target;
+    if (!whitelistRegex.test(value)) {
+      alert('Input contains disallowed characters');
+      return;
+    }
     setEmail(event.target.value);
   };
 
   const handleNameChange = (event) => {
+    const { value } = event.target;
+    if (!whitelistRegex.test(value)) {
+      alert('Input contains disallowed characters');
+      return;
+    }
     setName(event.target.value);
   };
 
   const handleLastNameChange = (event) => {
+    const { value } = event.target;
+    if (!whitelistRegex.test(value)) {
+      alert('Input contains disallowed characters');
+      return;
+    }
     setLastName(event.target.value);
   };
 
@@ -43,10 +62,7 @@ export const Register = () => {
 
     event.preventDefault();
 
-    if (!isChecked) {
-      alert('You need to agree the terms to continue');
-      return;
-    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const user = {
       FirstName: name,
@@ -57,6 +73,29 @@ export const Register = () => {
       Checked: isChecked
     }
 
+    const validationErrors = {};
+
+    if (!isValidEmail(user.Email)) {
+      validationErrors.email = 'Invalid email format';
+    }
+    if (!isWithinLength(user.FirstName)) {
+      validationErrors.firstName = 'First name length should be between 2 and 50 characters';
+    }
+    if (!isWithinLength(user.LastName)) {
+      validationErrors.lastName = 'Last name length should be between 2 and 50 characters';
+    }
+    if (!isStrongPassword(user.Password)) {
+      validationErrors.passwordStrength = 'Password should be 8 to 128 marks long and contain an upper and a lower case letter, a special character and a number';
+    }
+    if(user.Password !== user.ConfirmPassword) {
+      validationErrors.passwordMatch = 'Password and password confirmation should match';
+    }
+    if (!isChecked) {
+      alert('You need to agree the terms to continue');
+      return;
+    }
+
+    if (Object.keys(validationErrors).length === 0) {
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -70,10 +109,26 @@ export const Register = () => {
         throw new Error(await response.text());
       }
 
+      // Reset input fields after successful registration
+      setEmail('');
+      setName('');
+      setLastName('');
+      setPassword('');
+      setConfirm('');
+      setIsChecked(false);
+      setErrors({});
+
       const responseData = await response.text();
       console.log(responseData);
     } catch (error) {
-      console.error('Error:', error.message);
+      console.error(error.message);
+      if (error.message.includes("Email already in use")) {
+        alert("Email is already in use");
+      }
+      return;
+    } 
+  } else {
+    setErrors(validationErrors);
     }
   };
 
@@ -88,29 +143,39 @@ export const Register = () => {
           label="Email"
           value={email}
           onChange={handleEmailChange}
+          error={errors.email}
+          helperText={errors.email}
         />
         <TextField1
           label="First name"
           value={name}
           autoComplete="off"
           onChange={handleNameChange}
+          error={errors.firstName}
+          helperText={errors.firstName}
         />
         <TextField1
           label="Last name"
           value={lastName}
           onChange={handleLastNameChange}
+          error={errors.lastName}
+          helperText={errors.lastName}
         />
         <TextField1
           label="Password"
           type="password"
           value={password}
           onChange={handlePasswordChange}
+          error={errors.passwordStrength}
+          helperText={errors.passwordStrength}
         />
         <TextField1
           label="Confirm password"
           type="password"
           value={confirm}
           onChange={handleConfirmChange}
+          error={errors.passwordMatch}
+          helperText={errors.passwordMatch}
         />
         <HelpText>
           By continuing you agree that the application can process your data for educational purposes
